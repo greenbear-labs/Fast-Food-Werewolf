@@ -32,10 +32,25 @@ Kitchen (grills), Freezer (slippery ice), Party Room, Hallway, Dining Hall, Play
 | Garlic Fries | survivors | Shield: the werewolf bounces off and gets dizzy. A werewolf who steps on them sneezes |
 | Onion Bomb | survivors | Stinky cloud: survivors inside are hidden, the werewolf is slowed |
 | Moon Pie | werewolf | HOWL: see every survivor for 5 seconds |
+| Ghost Pepper | werewolf | RAGE: much faster for a few seconds, smashes through swinging doors and grease |
+| Syrup Trap | werewolf | Drops a sticky trap that survivors can barely see; stepping in sticks you in place |
+
+### The werewolf
+
+Bigger and faster than everyone, with red eyes when it's angry. Every 14 seconds its nose points it at the nearest survivor for a moment, and in the last 20 seconds of a round it goes into a **midnight frenzy** and gets faster still. Survivors hear it growl when it's close.
+
+### Tasks
+
+Six stations (Kitchen, Freezer, Party Room, Dining Hall, Playland, Drive-Thru) have a quick one-button mini game: time a press, mash, or hold and release. Finishing one scores points and brings closing time 5 seconds sooner, but it shows the werewolf where you are. Each station rests for 40 seconds after it's done. Moving quits a task.
 
 ### Scoring
 
-Survivors get 1 point per second they stay free and +15 for lasting the round. The werewolf gets +20 per catch and +10 for catching everyone. Caught survivors become ghosts and can float around watching.
+Risky play scores more. The full list shows in the lobby (from `SCORING` in `js/sim.js`):
+
+- Survivors: +1 every second free, +2 more every second you're close to the werewolf, +15 for slamming a swinging door on it, +15 when your grease spins it out, +20 for a Garlic Fries block, +10 per task, +15 for lasting the round and +10 more if you never used a vent. Vents have a 15 second cooldown.
+- Werewolf: +20 per catch, +15 for catching everyone, +5 when its grease spins out a survivor.
+
+Caught survivors become ghosts and can float around watching.
 
 ## How the networking works
 

@@ -37,3 +37,43 @@ test("a bot-only game plays through every round and ends", () => {
   assert.ok(catches > 0, "the werewolf bot should catch someone");
   assert.ok(JSON.stringify(snapshot(s)).length < 8000);
 });
+
+import { completeTask, CFG as C2 } from "../js/sim.js";
+import { doors, center } from "../js/map.js";
+
+test("finishing a task scores, shortens the clock and pings the werewolf", () => {
+  const players = [newPlayer("w", "W", COLORS[0]), newPlayer("s", "S", COLORS[1])];
+  const s = createGame(players, 2);
+  startRound(s);
+  const surv = s.players.find((p) => p.role === "surv");
+  const st = s.stations[0];
+  surv.x = st.x; surv.y = st.y;
+  const before = { score: surv.score, timer: s.timer };
+  assert.ok(completeTask(s, surv, st.id));
+  assert.equal(surv.score, before.score + 10);
+  assert.equal(s.timer, before.timer - C2.taskClock);
+  assert.equal(s.pings.length, 1);
+  assert.ok(!completeTask(s, surv, st.id), "station is on cooldown");
+});
+
+test("a survivor who slams a swinging door on the werewolf gets points", () => {
+  const players = [newPlayer("a", "A", COLORS[0]), newPlayer("b", "B", COLORS[1])];
+  const s = createGame(players, 2);
+  startRound(s);
+  const wolf = s.players.find((p) => p.role === "wolf");
+  const surv = s.players.find((p) => p.role === "surv");
+  wolf.fx.hold = 0;
+  const d = doors.find((x) => x.horizontalWall);
+  const [tx, ty] = d.tiles[0];
+  const c = center(tx, ty);
+  // survivor runs down through the door, werewolf follows right behind
+  surv.x = c.x; surv.y = c.y - 50; wolf.x = c.x; wolf.y = c.y - 160;
+  const inputs = { [surv.id]: { mx: 0, my: 1 }, [wolf.id]: { mx: 0, my: 1 } };
+  let slam = false;
+  for (let i = 0; i < 90 && !slam; i++) {
+    step(s, 1 / 60, inputs);
+    slam = s.events.some((e) => e.e === "points" && e.why === "DOOR SLAM" && e.who === surv.id);
+    s.events.length = 0;
+  }
+  assert.ok(slam);
+});
